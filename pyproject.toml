@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11,<3.14"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
-  "bitwarden-sdk>=0.1.0,<0.2.0",
+  "bitwarden-sdk>=0.1.0,<1.1.0",
   "google-cloud-secret-manager>=2.19.0,<3.0.0",
   "pydantic>=2.7.0,<3.0.0",
   "python-dotenv>=1.0.1,<2.0.0",
