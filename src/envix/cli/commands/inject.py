@@ -100,4 +100,4 @@ def inject_command(args: Args) -> None:
     if errors:
         raise EnvixLoadEnvsError(errors)
 
-    subprocess.call([args.command] + args.args)
+    subprocess.call([args.command] + args.args, env={**os.environ})
