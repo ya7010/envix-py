@@ -30,12 +30,12 @@ jobs:
           cache-dependency-glob: "uv.lock"
           python-version: ${{ matrix.python-version }}
       - name: Format
-        run: poetry run --frozen task format --diff
+        run: uv run --frozen task format --diff
       - name: Lint
-        run: poetry run --frozen task lint --diff
+        run: uv run --frozen task lint --diff
       - name: Type Check
-        run: poetry run --frozen task typecheck
+        run: uv run --frozen task typecheck
       - name: Schema Check
-        run: poetry run --frozen task schemacheck
+        run: uv run --frozen task schemacheck
       - name: Test
-        run: poetry run --frozen task test
+        run: uv run --frozen task test
