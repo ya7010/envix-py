@@ -78,3 +78,14 @@ class EnvixConfigFileParseError(EnvixEnvInjectionError, ValueError):
     @property
     def message(self) -> str:
         return f'Config file parse error: "{self.filename.absolute()}"'
+
+
+class EnvixBitwardenError(EnvixEnvInjectionError):
+    """Bitwarden related errors."""
+
+    def __init__(self, message: str):
+        self._message = message
+
+    @property
+    def message(self) -> str:
+        return self._message

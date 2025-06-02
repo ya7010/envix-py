@@ -1,5 +1,68 @@
 {
   "$defs": {
+    "BitwardenEnvsV1": {
+      "additionalProperties": false,
+      "description": "Bitwarden environment variables.",
+      "properties": {
+        "type": {
+          "const": "Bitwarden",
+          "title": "Bitwarden environment variables.",
+          "type": "string"
+        },
+        "items": {
+          "patternProperties": {
+            "^[A-Z_]+$": {
+              "anyOf": [
+                {
+                  "examples": [
+                    "items/123/fields/456"
+                  ],
+                  "pattern": "items/\\w+/fields/\\w+",
+                  "title": "Name of the Bitwarden item and field to read.",
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/$defs/BitwardenItem"
+                }
+              ]
+            }
+          },
+          "title": "Items",
+          "type": "object"
+        },
+        "overwrite": {
+          "default": true,
+          "description": "Whether to overwrite existing environment variables.",
+          "title": "overwrite existing environment variables.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "items"
+      ],
+      "title": "BitwardenEnvsV1",
+      "type": "object"
+    },
+    "BitwardenItem": {
+      "description": "Bitwarden item configuration.",
+      "properties": {
+        "item_id": {
+          "title": "Item Id",
+          "type": "string"
+        },
+        "field_id": {
+          "title": "Field Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item_id",
+        "field_id"
+      ],
+      "title": "BitwardenItem",
+      "type": "object"
+    },
     "ConfigV1": {
       "additionalProperties": false,
       "properties": {
@@ -31,6 +94,9 @@
               },
               {
                 "$ref": "#/$defs/GoogleCloudSecretManagerEnvsV1"
+              },
+              {
+                "$ref": "#/$defs/BitwardenEnvsV1"
               }
             ]
           },
@@ -49,9 +115,6 @@
       "properties": {
         "version": {
           "const": 1,
-          "enum": [
-            1
-          ],
           "title": "envix version.",
           "type": "integer"
         }
@@ -69,9 +132,6 @@
         "type": {
           "const": "File",
           "description": "Environment variable settings to be read from a file.",
-          "enum": [
-            "File"
-          ],
           "title": "File environment variables.",
           "type": "string"
         },
@@ -106,9 +166,6 @@
       "properties": {
         "type": {
           "const": "GoogleCloudSecretManager",
-          "enum": [
-            "GoogleCloudSecretManager"
-          ],
           "title": "Google Cloud Secret Manager environment variables.",
           "type": "string"
         },
@@ -166,9 +223,6 @@
             },
             {
               "const": "latest",
-              "enum": [
-                "latest"
-              ],
               "type": "string"
             }
           ],
@@ -189,9 +243,6 @@
         "type": {
           "const": "Local",
           "description": "Environment variables to be read from the local machine user environments.",
-          "enum": [
-            "Local"
-          ],
           "title": "Local environment variables.",
           "type": "string"
         },
@@ -237,9 +288,6 @@
         "type": {
           "const": "Raw",
           "description": "Environment variable settings to be written directly in the configuration file.",
-          "enum": [
-            "Raw"
-          ],
           "title": "Raw environment variables.",
           "type": "string"
         },

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, assert_never
 from pydantic import SecretStr
 
 from envix.config.v1.envs import EnvsV1
+from envix.config.v1.envs.bitwarden_envs_v1 import BitwardenEnvsV1
 from envix.config.v1.envs.file_envs_v1 import FileEnvsV1
 from envix.config.v1.envs.google_cloud_secret_manager_envs_v1 import (
     GoogleCloudSecretManagerEnvsV1,
@@ -12,6 +13,7 @@ from envix.config.v1.envs.google_cloud_secret_manager_envs_v1 import (
 from envix.config.v1.envs.local_envs_v1 import LocalEnvsV1
 from envix.config.v1.envs.raw_envs_v1 import RawEnvsV1
 from envix.exception import (
+    EnvixBitwardenError,
     EnvixEnvInjectionError,
     EnvixEnvironmentFileLoadError,
     EnvixEnvironmentNotSetting,
@@ -109,6 +111,60 @@ async def load_google_cloud_secret_manager_envs_v1(
     return secrets, errors
 
 
+async def load_bitwarden_envs_v1(
+    envs: BitwardenEnvsV1,
+) -> tuple[Secrets, list[EnvixEnvInjectionError]]:
+    secrets: Secrets = {}
+    errors: list[EnvixEnvInjectionError] = []
+
+    try:
+        from bitwarden_sdk import BitwardenClient, ClientSettings
+
+        client = BitwardenClient(ClientSettings())
+        await client.initialize()
+
+        for envname, item in envs.secret_items.items():
+            if envs.overwrite or envname not in os.environ:
+                try:
+                    # アイテムIDとフィールドIDを抽出
+                    item_id = item.split("/")[1]
+                    field_id = item.split("/")[3]
+
+                    # アイテムを取得
+                    secret_item = await client.get_secret(item_id)
+
+                    # フィールドの値を取得
+                    field = next(
+                        (f for f in secret_item.fields if f.id == field_id), None
+                    )
+
+                    if field is None:
+                        errors.append(
+                            EnvixBitwardenError(f"Field not found: {field_id}")
+                        )
+                        continue
+
+                    value = field.value
+                    os.environ[envname] = value
+                    secrets[envname] = SecretStr(value)
+
+                except Exception as e:
+                    errors.append(
+                        EnvixBitwardenError(f"Failed to get Bitwarden item: {str(e)}")
+                    )
+
+        await client.cleanup()
+
+    except ImportError:
+        errors.append(EnvixBitwardenError("bitwarden-sdk package is not installed"))
+    except Exception as e:
+        errors.append(
+            EnvixBitwardenError(f"Failed to initialize Bitwarden client: {str(e)}")
+        )
+
+    return secrets, errors
+
+
 async def load_envs_v1(
     envs: EnvsV1,
     google_cloud_secret_manager_client: "secretmanager.SecretManagerServiceAsyncClient | None" = None,
@@ -127,6 +183,9 @@ async def load_envs_v1(
             return await load_google_cloud_secret_manager_envs_v1(
                 envs, client=google_cloud_secret_manager_client
             )
+
+        case BitwardenEnvsV1():
+            return await load_bitwarden_envs_v1(envs)
 
         case _:
             assert_never(envs)
