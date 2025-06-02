@@ -18,7 +18,7 @@ for config_filepath in PACKAGE_DIR.glob("**/*config*.yml"):
 if errors:
     for config_filepath, e in errors:
         print(
-            f"Error: \"{config_filepath}\"\n{(textwrap.indent(str(e), 4 * ' '))}",
+            f'Error: "{config_filepath}"\n{(textwrap.indent(str(e), 4 * " "))}',
             file=sys.stderr,
         )
 
