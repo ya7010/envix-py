@@ -3,16 +3,15 @@ name = "envix"
 version = "0.2.8"
 description = "convinient secret manager."
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
-authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
+requires-python = ">=3.11"
+authors = [{ name = "ya7010", email = "ya7010@outlook.com" }]
 dependencies = [
-  "bitwarden-sdk>=0.1.0,<1.1.0",
-  "google-cloud-secret-manager>=2.19.0,<3.0.0",
-  "pydantic>=2.7.0,<3.0.0",
-  "python-dotenv>=1.0.1,<2.0.0",
-  "pyyaml>=6.0.1,<7.0.0",
-  "rich-argparse>=1.4.0,<2.0.0",
-  "rich>=13.7.1,<15.0.0",
+  "google-cloud-secret-manager >=2.19.0",
+  "pydantic >=2.7.0",
+  "python-dotenv >=1.0.1",
+  "pyyaml >=6.0.1",
+  "rich >=13.7.1",
+  "rich-argparse >=1.4.0",
 ]
 
 [project.scripts]
@@ -20,11 +19,11 @@ envix = "envix.cli.__main__:main"
 
 [dependency-groups]
 dev = [
-  "pyright",
-  "pytest",
-  "pytest-asyncio",
-  "ruff",
-  "taskipy",
+  "pyright >=1.1.357",
+  "pytest >=8.1.1",
+  "pytest-asyncio >=0.24.0",
+  "ruff >=0.11.12",
+  "taskipy >=1.12.2",
 ]
 
 [build-system]
@@ -39,6 +38,3 @@ schema = "envix config schema > schemas/config.json"
 schemacheck = "python tasks/validate_config.py"
 test = "pytest"
 typecheck = "pyright src/** tests/**"
-
-[tool.uv.workspace]
-members = ["aaa", "src/envix/aaa"]

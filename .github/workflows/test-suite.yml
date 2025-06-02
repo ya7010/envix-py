@@ -24,14 +24,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
-          cache-dependency-glob: 'uv.lock'
-      - run: uv python install
-      - run: uv sync --all-extras --dev
-      - run: uv run task format --diff
-      - run: uv run task lint --diff
-      - run: uv run task typecheck
-      - run: uv run task schemacheck
-      - run: uv run task test
+          cache-dependency-glob: "uv.lock"
+          python-version: ${{ matrix.python-version }}
+      - name: Format
+        run: uv run --frozen task format --diff
+      - name: Lint
+        run: uv run --frozen task lint --diff
+      - name: Type Check
+        run: uv run --frozen task typecheck
+      - name: Schema Check
+        run: uv run --frozen task schemacheck
+      - name: Test
+        run: uv run --frozen task test

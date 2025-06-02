@@ -9,7 +9,22 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/envix
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v2
-      - uses: astral-sh/setup-uv@v5
-      - run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install build dependencies
+        run: pip install build
+      - name: Build package
+        run: python -m build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
